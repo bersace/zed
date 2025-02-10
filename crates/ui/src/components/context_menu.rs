@@ -246,7 +246,6 @@ impl ContextMenu {
             disabled: false,
             documentation_aside: None,
         }));
-        self.keep_open_on_confirm = true;
         self
     }
 
@@ -738,19 +737,17 @@ impl Render for ContextMenu {
                                                                 );
                                                                 menu.update(cx, |menu, cx| {
                                                                     menu.clicked = true;
-
-                                                                    // if toggle.is_none() {
-                                                                    //                 cx.emit(DismissEvent);
-                                                                    //             } else {
-                                                                    //                 cx.notify();
-                                                                    //             }
-                                                                    // if toggle.is_none() {
-                                                                    //     cx.emit(DismissEvent);
-                                                                    // }
-                                                                        // cx.emit(DismissEvent);
-                                                                    // if toggle.is_some() {
-                                                                    //     menu.keep_open_on_confirm = true;
-                                                                    // }
+                                                                    if toggle.is_some() {
+                                                                        if let Some(ContextMenuItem::Entry(entry)) = menu.items.get_mut(ix) {
+                                                                            if let Some((_, toggled)) = &mut entry.toggle {
+                                                                                *toggled = !*toggled;
+                                                                            }
+                                                                        }
+                                                                        menu.keep_open_on_confirm = true;
+                                                                        cx.notify();
+                                                                    } else {
+                                                                        cx.emit(DismissEvent);
+                                                                    }
                                                                 })
                                                                 .ok();
                                                             }
